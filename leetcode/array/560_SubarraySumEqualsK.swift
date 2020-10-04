@@ -1,33 +1,51 @@
-//https://leetcode.com/problems/subarray-sum-equals-k/
-//560. Subarray Sum Equals K
-//Group: Hash
-class Solution {
-    func subarraySum(_ nums: [Int], _ k: Int) -> Int {
-        // O(n), space O(n)
-        var count = 0
-        let n = nums.count
-        var dict = Dictionary<Int, Int>() // key is sum, value is number of occurance 
-        // dict[0] = 1
-        var sum = 0
+//https://leetcode.com/problems/k-diff-pairs-in-an-array/
+//Group: hash map
 
-        for i in 0..<n {
-            sum += nums[i]
-            if (sum == k){
-                count += 1
+class Solution {
+    func findPairs(_ nums: [Int], _ k: Int) -> Int {
+        //O(n)
+        var map = [Int : Int]()
+        for v in nums{
+            if map[v] != nil{
+                map[v] = map[v]! + 1
+            } else {
+                map[v] = 1
             }
-            //sum != k, then need to find the result for array 0..i-1, which sum = currentSum - k, So it can combine with nums[i] to meet requirement
-            if let countSumLess = dict[sum-k]{
-                count += countSumLess
+        }
+        var count = 0
+        for (key, value) in map{
+            if k>0 {
+                if map[key-k] != nil{
+                    count += 1
+                }
+            } else {//k==0
+                if value > 1{
+                    count += 1 
+                }
             }
-            if let countSum = dict[sum]{
-                dict[sum] = countSum + 1
-            } else{
-                dict[sum] = 1
-            } 
-            // print (dict)
-            // print ("sum: \(sum) count:\(count)")
-            
         }
         return count
+    }
+    
+}
+
+class Solution2 {
+    func findPairs(_ nums: [Int], _ k: Int) -> Int {
+        //O(nlogn)
+        var a = nums.sorted()
+        var lo = 0
+        var i = 1
+        var s = Set<Int>()
+        while i<a.count{
+            while a[i] - a[lo] > k && lo < i-1{
+                lo += 1
+            }
+
+            if a[i] - a[lo] == k && !s.contains(a[i]){
+                s.insert(a[i])
+            }
+            i+=1
+        }
+        return s.count
     }
 }
